@@ -243,6 +243,8 @@ set_flag("-O2 -DNDEBUG -g3" RELWITHDEBINFO)
 set_flag("-O0 -g3"          DEBUG)
 set_flag("-Wall -Wextra")
 
+#set_flag("-fsanitize=address -fno-omit-frame-pointer")
+
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set_flag("-rdynamic")
     set_flag("-fPIC")
