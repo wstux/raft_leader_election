@@ -89,6 +89,10 @@ void server::deinit()
 
 bool server::init()
 {
+    if (is_inited()) {
+        return true;
+    }
+
     const bool is_inited = details::utils::init(*m_p_ctx);
     if (! is_inited) {
         RAFT_LOG_ERROR((*m_p_ctx), "Filed to init raft server.");
@@ -208,6 +212,9 @@ void server::stop()
     m_p_ctx->p_scheduler->stop();
     details::timeout::election_cancel_task(*m_p_ctx);
     details::timeout::heartbeat_cancel_task(*m_p_ctx);
+
+    m_p_ctx->p_scheduler->reset_task(m_p_ctx->election_task);
+    m_p_ctx->p_scheduler->reset_task(m_p_ctx->heartbeat_task);
 }
 
 } // namespace le

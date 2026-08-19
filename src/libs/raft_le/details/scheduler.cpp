@@ -24,12 +24,14 @@
 
 #include <chrono>
 #include <memory>
+#include <memory_resource>
 #include <shared_mutex>
 #include <thread>
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+#include "raft_le/details/allocator.h"
 #include "raft_le/details/scheduler.h"
 
 namespace wstux {
@@ -51,10 +53,11 @@ struct scheduler::task final
     /// \brief  Constructor.
     /// \param  h - user handler.
     /// \param  io - asio asynchronous context.
-    task(const scheduler::handler_type& h, boost::asio::io_context& io)
+    task(const scheduler::handler_type& h, boost::asio::io_context& io, const std::pmr::polymorphic_allocator<task>& a)
         : is_cancelled(true)
         , exec(h)
         , timer(io)
+        , alloc(a)
     {}
 
     /// \brief  Executes the user functor if the task has not been canceled.
@@ -94,6 +97,13 @@ struct scheduler::task final
     std::atomic_bool is_cancelled;   ///< Flag indicating the cancellation/activity state of the task.
     scheduler::handler_type exec;    ///< User handler.
     boost::asio::steady_timer timer; ///< Timer for implementing execution delays.
+
+    friend void intrusive_ptr_add_ref(const task* ptr) noexcept;
+    friend void intrusive_ptr_release(task* ptr) noexcept;
+
+private:
+    std::pmr::polymorphic_allocator<task> alloc;
+    mutable std::atomic_uint ref_counter{0};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,8 +121,9 @@ struct scheduler::context final
 
     /// \brief  Constructor.
     /// \param  pool_size - number of worker threads.
-    explicit context(size_t pool_size)
+    context(size_t pool_size, std::pmr::memory_resource* p_pmr_res)
         : threads_size(pool_size)
+        , p_pmr_resource(p_pmr_res)
         , io_ctx()
         , strand(boost::asio::make_strand(io_ctx))
     {}
@@ -129,12 +140,15 @@ struct scheduler::context final
             return;
         }
 
-        work_guard = std::make_unique<work_guiard_t>(boost::asio::make_work_guard(io_ctx));
-        thread_pool = std::make_unique<boost::asio::thread_pool>(threads_size);
+        //work_guard = std::make_unique<work_guiard_t>(boost::asio::make_work_guard(io_ctx));
+        work_guard = make_pmr_unique<work_guiard_t, pmr_deleter<work_guiard_t>>(p_pmr_resource, boost::asio::make_work_guard(io_ctx));
+        //thread_pool = std::make_unique<boost::asio::thread_pool>(threads_size);
+        thread_pool = make_pmr_unique<boost::asio::thread_pool, pmr_deleter<boost::asio::thread_pool>>(p_pmr_resource, threads_size);
 
         // Restart io_ctx processing on the new pool threads
         for (size_t i = 0; i < threads_size; ++i) {
-            boost::asio::post(*thread_pool, [this]() { io_ctx.run(); });
+            //boost::asio::post(*thread_pool, [this]() { io_ctx.run(); });
+            boost::asio::post(*thread_pool, boost::asio::bind_allocator(alloc, [this]() { io_ctx.run(); }));
         }
     }
 
@@ -157,18 +171,33 @@ struct scheduler::context final
     }
 
     std::atomic_size_t threads_size;
+
+    std::pmr::memory_resource* p_pmr_resource;
+    memory_pool<task, 3> mempool;
+
     boost::asio::io_context io_ctx;
     boost::asio::strand<boost::asio::io_context::executor_type> strand;
-    std::unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
-    std::unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
+    //std::unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
+    pmr_unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
+    //std::unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
+    pmr_unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
     std::shared_mutex pool_mutex; ///< Protects the recreation operations of the thread_pool.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// class scheduler::context_deleter
+
+void scheduler::context_deleter::operator()(context* ptr) const
+{
+    pmr_deleter<context>{p_pmr_resource}(ptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // class scheduler
 
-scheduler::scheduler(size_t pool_size)
-    : m_p_ctx(std::make_unique<context>(thread_pool_size(pool_size)))
+scheduler::scheduler(size_t pool_size, std::pmr::memory_resource* p_pmr_resource)
+    : m_p_ctx(make_pmr_unique<context, context_deleter>(p_pmr_resource, thread_pool_size(pool_size), p_pmr_resource))
+    , m_p_pmr_resource(p_pmr_resource)
 {}
 
 scheduler::~scheduler()
@@ -188,7 +217,8 @@ void scheduler::execute_async(const handler_type& handler)
     if (m_is_stop.load(std::memory_order_acquire)) {
         return;
     }
-    boost::asio::post(m_p_ctx->io_ctx, handler);
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
+    boost::asio::post(m_p_ctx->io_ctx, boost::asio::bind_allocator(alloc, handler));
 }
 
 void scheduler::execute_strand(const handler_type& handler)
@@ -196,7 +226,8 @@ void scheduler::execute_strand(const handler_type& handler)
     if (m_is_stop.load(std::memory_order_acquire)) {
         return;
     }
-    boost::asio::post(m_p_ctx->strand, handler);
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
+    boost::asio::post(m_p_ctx->strand, boost::asio::bind_allocator(alloc, handler));
 }
 
 bool scheduler::is_canceled(const task_type& task) const
@@ -206,7 +237,19 @@ bool scheduler::is_canceled(const task_type& task) const
 
 scheduler::task_type scheduler::make_task(const handler_type& handler) const
 {
-    return std::make_shared<task>(handler, m_p_ctx->io_ctx);
+    using traits = std::allocator_traits<std::pmr::polymorphic_allocator<task>>;
+
+    std::pmr::polymorphic_allocator<task>& alloc = m_p_ctx->mempool.allocator;
+    task* p_raw_task = alloc.allocate(1);
+
+    try {
+        traits::construct(alloc, p_raw_task, handler, m_p_ctx->io_ctx, alloc);
+    } catch (...) {
+        alloc.deallocate(p_raw_task, 1);
+        throw;
+    }
+    return task_type(p_raw_task);
+    //return std::allocate_shared<task>(m_p_ctx->task_pool.allocator, handler, m_p_ctx->io_ctx);
 }
 
 void scheduler::reconfigure(size_t new_size)
@@ -241,6 +284,11 @@ void scheduler::reschedule(const task_type& task, int32_t ms)
     schedule(task, ms);
 }
 
+void scheduler::reset_task(task_type& task) const
+{
+    task.reset();
+}
+
 void scheduler::schedule(const task_type& task, int32_t ms)
 {
     if (m_is_stop.load(std::memory_order_acquire)) {
@@ -254,10 +302,20 @@ void scheduler::schedule(const task_type& task, int32_t ms)
         return;
     }
 
-    task->resume();
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
 
+    task->resume();
     task->timer.expires_after(std::chrono::milliseconds(ms));
-    task->timer.async_wait(boost::asio::bind_executor(m_p_ctx->strand, std::bind(&task::handler, task, std::placeholders::_1)));
+    //task->timer.async_wait(boost::asio::bind_executor(m_p_ctx->strand, std::bind(&task::handler, task, std::placeholders::_1)));
+    task->timer.async_wait(
+        boost::asio::bind_allocator(
+            alloc,
+            boost::asio::bind_executor(
+                m_p_ctx->strand,
+                [task](const boost::system::error_code& ec) { task::handler(task, ec); }
+            )
+        )
+    );
 }
 
 void scheduler::start()
@@ -296,6 +354,23 @@ size_t scheduler::thread_pool_size(size_t pool_size)
 size_t scheduler::threads_size() const
 {
     return m_p_ctx->threads_size.load();
+}
+
+void intrusive_ptr_add_ref(const scheduler::task_type::element_type* ptr) noexcept
+{
+    ++(ptr->ref_counter);
+}
+
+void intrusive_ptr_release(scheduler::task_type::element_type* ptr) noexcept
+{
+    if ((--(ptr->ref_counter)) == 0) {
+        using allocator_type = std::pmr::polymorphic_allocator<scheduler::task_type::element_type>;
+        using traits = std::allocator_traits<allocator_type>;
+
+        allocator_type alloc = ptr->alloc;
+        traits::destroy(alloc, ptr);
+        alloc.deallocate(ptr, 1);
+    }
 }
 
 } // namespace details

@@ -90,7 +90,7 @@ size_t quorum_for_election(context& ctx)
 void update(context& ctx, const cluster_config& cluster_cfg)
 {
     ctx.peers.clear();
-    assert(ctx.peers.capacity() > 31);
+    assert(ctx.peers.capacity() >= peer::reserved_size);
 
     for (const server_config& cfg : cluster_cfg.servers) {
         if (ctx.id != cfg.id) {
@@ -127,7 +127,8 @@ bool init(context& ctx)
 
     ctx.role.voted_for = gk_invalid_id;
 
-    ctx.p_scheduler = std::make_shared<scheduler>(cfg.scheduler_threads_count);
+    //ctx.p_scheduler = std::make_shared<scheduler>(cfg.scheduler_threads_count);
+    ctx.p_scheduler.emplace(cfg.scheduler_threads_count);
 
     ctx.election_distribution = std::uniform_int_distribution<size_t>(cfg.vote_timeout_min_ms, cfg.vote_timeout_max_ms);
     ctx.heartbeat_interval_ms = cfg.heartbeat_interval_ms;
@@ -135,7 +136,7 @@ bool init(context& ctx)
     // Reserve memory. Statistically, the cluster has less than or equal to 32
     // nodes. Therefore, memory is reserved for 32 nodes. If more is needed,
     // just reallocation will occur.
-    ctx.peers.reserve(32);
+    ctx.peers.reserve(peer::reserved_size);
 
     return true;
 }
@@ -158,7 +159,7 @@ bool is_valid_cluster(const server_id_t id, const cluster_config& cluster_cfg)
 
 bool load(context& ctx)
 {
-    assert(ctx.peers.capacity() > 31);
+    assert(ctx.peers.capacity() >= peer::reserved_size);
 
     if (! ctx.peers.empty()) {
         return false;

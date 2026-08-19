@@ -42,6 +42,10 @@ struct peer final
     using ptr = peer*;
     using list = std::vector<peer>;
 
+    // Statistically, the cluster has less than or equal to 32 nodes. Therefore,
+    // memory is reserved for 32 nodes. If more is needed, just reallocation will occur.
+    static constexpr size_t reserved_size = 32;
+
     explicit peer(const server_config& cfg)
         : id(cfg.id)
         , is_voter(cfg.is_voter)
