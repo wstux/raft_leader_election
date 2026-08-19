@@ -208,6 +208,9 @@ void server::stop()
     m_p_ctx->p_scheduler->stop();
     details::timeout::election_cancel_task(*m_p_ctx);
     details::timeout::heartbeat_cancel_task(*m_p_ctx);
+
+    m_p_ctx->p_scheduler->reset_task(m_p_ctx->election_task);
+    m_p_ctx->p_scheduler->reset_task(m_p_ctx->heartbeat_task);
 }
 
 } // namespace le

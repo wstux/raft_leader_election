@@ -24,12 +24,14 @@
 
 #include <chrono>
 #include <memory>
+#include <memory_resource>
 #include <shared_mutex>
 #include <thread>
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+#include "raft_le/details/allocator.h"
 #include "raft_le/details/scheduler.h"
 
 namespace wstux {
@@ -157,6 +159,9 @@ struct scheduler::context final
     }
 
     std::atomic_size_t threads_size;
+
+    memory_pool<task, 3> task_pool;
+
     boost::asio::io_context io_ctx;
     boost::asio::strand<boost::asio::io_context::executor_type> strand;
     std::unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
@@ -206,7 +211,7 @@ bool scheduler::is_canceled(const task_type& task) const
 
 scheduler::task_type scheduler::make_task(const handler_type& handler) const
 {
-    return std::make_shared<task>(handler, m_p_ctx->io_ctx);
+    return std::allocate_shared<task>(m_p_ctx->task_pool.allocator, handler, m_p_ctx->io_ctx);
 }
 
 void scheduler::reconfigure(size_t new_size)
@@ -239,6 +244,11 @@ void scheduler::reschedule(const task_type& task, int32_t ms)
 {
     cancel(task);
     schedule(task, ms);
+}
+
+void scheduler::reset_task(task_type& task) const
+{
+    task.reset();
 }
 
 void scheduler::schedule(const task_type& task, int32_t ms)

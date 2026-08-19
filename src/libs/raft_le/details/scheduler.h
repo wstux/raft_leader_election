@@ -88,6 +88,8 @@ public:
     /// \param  ms - delay before execution in milliseconds.
     void reschedule(const task_type& task, int32_t ms);
 
+    void reset_task(task_type& task) const;
+
     /// \brief  Schedules a task to execute with a specified delay.
     /// \param  task - task.
     /// \param  ms - delay before execution in milliseconds.
