@@ -53,10 +53,11 @@ struct scheduler::task final
     /// \brief  Constructor.
     /// \param  h - user handler.
     /// \param  io - asio asynchronous context.
-    task(const scheduler::handler_type& h, boost::asio::io_context& io)
+    task(const scheduler::handler_type& h, boost::asio::io_context& io, const std::pmr::polymorphic_allocator<task>& a)
         : is_cancelled(true)
         , exec(h)
         , timer(io)
+        , alloc(a)
     {}
 
     /// \brief  Executes the user functor if the task has not been canceled.
@@ -96,6 +97,13 @@ struct scheduler::task final
     std::atomic_bool is_cancelled;   ///< Flag indicating the cancellation/activity state of the task.
     scheduler::handler_type exec;    ///< User handler.
     boost::asio::steady_timer timer; ///< Timer for implementing execution delays.
+
+    friend void intrusive_ptr_add_ref(const task* ptr) noexcept;
+    friend void intrusive_ptr_release(task* ptr) noexcept;
+
+private:
+    std::pmr::polymorphic_allocator<task> alloc;
+    mutable std::atomic_uint ref_counter{0};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +168,7 @@ struct scheduler::context final
 
     std::atomic_size_t threads_size;
 
-    memory_pool<task, 3> task_pool;
+    memory_pool<task, 3> mempool;
 
     boost::asio::io_context io_ctx;
     boost::asio::strand<boost::asio::io_context::executor_type> strand;
@@ -211,7 +219,19 @@ bool scheduler::is_canceled(const task_type& task) const
 
 scheduler::task_type scheduler::make_task(const handler_type& handler) const
 {
-    return std::allocate_shared<task>(m_p_ctx->task_pool.allocator, handler, m_p_ctx->io_ctx);
+    using traits = std::allocator_traits<std::pmr::polymorphic_allocator<task>>;
+
+    std::pmr::polymorphic_allocator<task>& alloc = m_p_ctx->mempool.allocator;
+    task* p_raw_task = alloc.allocate(1);
+
+    try {
+        traits::construct(alloc, p_raw_task, handler, m_p_ctx->io_ctx, alloc);
+    } catch (...) {
+        alloc.deallocate(p_raw_task, 1);
+        throw;
+    }
+    return task_type(p_raw_task);
+    //return std::allocate_shared<task>(m_p_ctx->task_pool.allocator, handler, m_p_ctx->io_ctx);
 }
 
 void scheduler::reconfigure(size_t new_size)
@@ -306,6 +326,23 @@ size_t scheduler::thread_pool_size(size_t pool_size)
 size_t scheduler::threads_size() const
 {
     return m_p_ctx->threads_size.load();
+}
+
+void intrusive_ptr_add_ref(const scheduler::task_type::element_type* ptr) noexcept
+{
+    ++(ptr->ref_counter);
+}
+
+void intrusive_ptr_release(scheduler::task_type::element_type* ptr) noexcept
+{
+    if ((--(ptr->ref_counter)) == 0) {
+        using allocator_type = std::pmr::polymorphic_allocator<scheduler::task_type::element_type>;
+        using traits = std::allocator_traits<allocator_type>;
+
+        allocator_type alloc = ptr->alloc;
+        traits::destroy(alloc, ptr);
+        alloc.deallocate(ptr, 1);
+    }
 }
 
 } // namespace details

@@ -29,6 +29,8 @@
 #include <functional>
 #include <memory>
 
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+
 namespace wstux {
 namespace raft {
 namespace le {
@@ -48,7 +50,7 @@ private:
 public:
     using ptr = std::shared_ptr<scheduler>;     ///< Pointer to the scheduler instance.
     using handler_type = std::function<void()>; ///< Type of the user handler.
-    using task_type = std::shared_ptr<task>;    ///< Task structure.
+    using task_type = boost::intrusive_ptr<task>;   ///< Task structure.
 
 public:
     /// \brief  Constructor.
@@ -118,6 +120,9 @@ private:
     std::atomic_bool m_is_stop{true};
     std::unique_ptr<context> m_p_ctx; ///< Pointer to the execution context.
 };
+
+void intrusive_ptr_add_ref(const scheduler::task_type::element_type* ptr) noexcept;
+void intrusive_ptr_release(scheduler::task_type::element_type* ptr) noexcept;
 
 } // namespace details
 } // namespace le
