@@ -27,6 +27,7 @@
 
 #include <atomic>
 #include <functional>
+#include <optional>
 #include <memory>
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
@@ -48,8 +49,8 @@ private:
     struct task;
 
 public:
-    using ptr = std::shared_ptr<scheduler>;     ///< Pointer to the scheduler instance.
-    using handler_type = std::function<void()>; ///< Type of the user handler.
+    using ptr = std::optional<scheduler>;           ///< Pointer to the scheduler instance.
+    using handler_type = std::function<void()>;     ///< Type of the user handler.
     using task_type = boost::intrusive_ptr<task>;   ///< Task structure.
 
 public:
