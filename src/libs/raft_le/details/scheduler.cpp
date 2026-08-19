@@ -147,7 +147,8 @@ struct scheduler::context final
 
         // Restart io_ctx processing on the new pool threads
         for (size_t i = 0; i < threads_size; ++i) {
-            boost::asio::post(*thread_pool, [this]() { io_ctx.run(); });
+            //boost::asio::post(*thread_pool, [this]() { io_ctx.run(); });
+            boost::asio::post(*thread_pool, boost::asio::bind_allocator(alloc, [this]() { io_ctx.run(); }));
         }
     }
 
@@ -216,7 +217,8 @@ void scheduler::execute_async(const handler_type& handler)
     if (m_is_stop.load(std::memory_order_acquire)) {
         return;
     }
-    boost::asio::post(m_p_ctx->io_ctx, handler);
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
+    boost::asio::post(m_p_ctx->io_ctx, boost::asio::bind_allocator(alloc, handler));
 }
 
 void scheduler::execute_strand(const handler_type& handler)
@@ -224,7 +226,8 @@ void scheduler::execute_strand(const handler_type& handler)
     if (m_is_stop.load(std::memory_order_acquire)) {
         return;
     }
-    boost::asio::post(m_p_ctx->strand, handler);
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
+    boost::asio::post(m_p_ctx->strand, boost::asio::bind_allocator(alloc, handler));
 }
 
 bool scheduler::is_canceled(const task_type& task) const
@@ -299,10 +302,20 @@ void scheduler::schedule(const task_type& task, int32_t ms)
         return;
     }
 
-    task->resume();
+    std::pmr::polymorphic_allocator<void> alloc(m_p_pmr_resource);
 
+    task->resume();
     task->timer.expires_after(std::chrono::milliseconds(ms));
-    task->timer.async_wait(boost::asio::bind_executor(m_p_ctx->strand, std::bind(&task::handler, task, std::placeholders::_1)));
+    //task->timer.async_wait(boost::asio::bind_executor(m_p_ctx->strand, std::bind(&task::handler, task, std::placeholders::_1)));
+    task->timer.async_wait(
+        boost::asio::bind_allocator(
+            alloc,
+            boost::asio::bind_executor(
+                m_p_ctx->strand,
+                [task](const boost::system::error_code& ec) { task::handler(task, ec); }
+            )
+        )
+    );
 }
 
 void scheduler::start()
