@@ -121,8 +121,9 @@ struct scheduler::context final
 
     /// \brief  Constructor.
     /// \param  pool_size - number of worker threads.
-    explicit context(size_t pool_size)
+    context(size_t pool_size, std::pmr::memory_resource* p_pmr_res)
         : threads_size(pool_size)
+        , p_pmr_resource(p_pmr_res)
         , io_ctx()
         , strand(boost::asio::make_strand(io_ctx))
     {}
@@ -139,8 +140,10 @@ struct scheduler::context final
             return;
         }
 
-        work_guard = std::make_unique<work_guiard_t>(boost::asio::make_work_guard(io_ctx));
-        thread_pool = std::make_unique<boost::asio::thread_pool>(threads_size);
+        //work_guard = std::make_unique<work_guiard_t>(boost::asio::make_work_guard(io_ctx));
+        work_guard = make_pmr_unique<work_guiard_t, pmr_deleter<work_guiard_t>>(p_pmr_resource, boost::asio::make_work_guard(io_ctx));
+        //thread_pool = std::make_unique<boost::asio::thread_pool>(threads_size);
+        thread_pool = make_pmr_unique<boost::asio::thread_pool, pmr_deleter<boost::asio::thread_pool>>(p_pmr_resource, threads_size);
 
         // Restart io_ctx processing on the new pool threads
         for (size_t i = 0; i < threads_size; ++i) {
@@ -168,20 +171,32 @@ struct scheduler::context final
 
     std::atomic_size_t threads_size;
 
+    std::pmr::memory_resource* p_pmr_resource;
     memory_pool<task, 3> mempool;
 
     boost::asio::io_context io_ctx;
     boost::asio::strand<boost::asio::io_context::executor_type> strand;
-    std::unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
-    std::unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
+    //std::unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
+    pmr_unique_ptr<work_guiard_t> work_guard; ///< Ensures that io_ctx.run() does not exit the loop when there are no more tasks.
+    //std::unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
+    pmr_unique_ptr<boost::asio::thread_pool> thread_pool; ///< Boost.asio execution thread pool.
     std::shared_mutex pool_mutex; ///< Protects the recreation operations of the thread_pool.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// class scheduler::context_deleter
+
+void scheduler::context_deleter::operator()(context* ptr) const
+{
+    pmr_deleter<context>{p_pmr_resource}(ptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // class scheduler
 
-scheduler::scheduler(size_t pool_size)
-    : m_p_ctx(std::make_unique<context>(thread_pool_size(pool_size)))
+scheduler::scheduler(size_t pool_size, std::pmr::memory_resource* p_pmr_resource)
+    : m_p_ctx(make_pmr_unique<context, context_deleter>(p_pmr_resource, thread_pool_size(pool_size), p_pmr_resource))
+    , m_p_pmr_resource(p_pmr_resource)
 {}
 
 scheduler::~scheduler()

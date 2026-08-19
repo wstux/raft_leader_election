@@ -29,6 +29,7 @@
 #include <functional>
 #include <optional>
 #include <memory>
+#include <memory_resource>
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 
@@ -57,7 +58,7 @@ public:
     /// \brief  Constructor.
     /// \param  pool_size - number of asio worker threads. If 0 is passed, the
     ///     size is calculated automatically based on the hardware configuration.
-    scheduler(size_t pool_size = 4);
+    scheduler(size_t pool_size = 4, std::pmr::memory_resource* p_pmr_resource = std::pmr::get_default_resource());
 
     /// \brief  Destructor. Automatically calls the stop() method to terminate threads.
     ~scheduler();
@@ -117,9 +118,18 @@ private:
 private:
     struct context;
 
+    struct context_deleter
+    {
+        void operator()(context* ptr) const;
+        std::pmr::memory_resource* p_pmr_resource;
+    };
+
+    using context_ptr = std::unique_ptr<context, context_deleter>;
+
 private:
     std::atomic_bool m_is_stop{true};
-    std::unique_ptr<context> m_p_ctx; ///< Pointer to the execution context.
+    context_ptr m_p_ctx; ///< Pointer to the execution context.
+    std::pmr::memory_resource* m_p_pmr_resource;
 };
 
 void intrusive_ptr_add_ref(const scheduler::task_type::element_type* ptr) noexcept;
