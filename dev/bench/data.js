@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787677211855,
+  "lastUpdate": 1787687518560,
   "repoUrl": "https://github.com/wstux/raft_leader_election",
   "entries": {
     "Benchmark": [
@@ -138,6 +138,220 @@ window.BENCHMARK_DATA = {
             "value": 0.5460552518787369,
             "unit": "ns/iter",
             "extra": "iterations: 1283001549\ncpu: 0.5459759620290217 ns\nthreads: 1"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "wstux1@gmail.com",
+            "name": "wstux",
+            "username": "wstux"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
+          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
+          "timestamp": "2026-08-25T22:48:58+03:00",
+          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
+          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
+        },
+        "date": 1787687517400,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "leader_election<3> (Real Time)",
+            "value": 41.44654836000228,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election<3> (CPU Time)",
+            "value": 0.37540378000000096,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election<5> (Real Time)",
+            "value": 42.011793209998984,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election<5> (CPU Time)",
+            "value": 0.8200491100000038,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election<7> (Real Time)",
+            "value": 43.94043772000174,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election<7> (CPU Time)",
+            "value": 1.4519588100000018,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<3> (Real Time)",
+            "value": 695.2629804000082,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<3> (CPU Time)",
+            "value": 0.9825335999999574,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<5> (Real Time)",
+            "value": 609.2897692999856,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<5> (CPU Time)",
+            "value": 1.3174234000000062,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<7> (Real Time)",
+            "value": 565.8748855000027,
+            "unit": "ms"
+          },
+          {
+            "name": "leader_election_default<7> (CPU Time)",
+            "value": 1.9224650999999817,
+            "unit": "ms"
+          },
+          {
+            "name": "check_contact_quorum/threads:1 (Real Time)",
+            "value": 5.713500969813915,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:1 (CPU Time)",
+            "value": 5.7130459355564644,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:2 (Real Time)",
+            "value": 57.25875226000947,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:2 (CPU Time)",
+            "value": 57.24877930014878,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:4 (Real Time)",
+            "value": 115.27677727747839,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:4 (CPU Time)",
+            "value": 115.0503024918423,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:8 (Real Time)",
+            "value": 188.23478909976458,
+            "unit": "ns"
+          },
+          {
+            "name": "check_contact_quorum/threads:8 (CPU Time)",
+            "value": 111.2181348838864,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:1 (Real Time)",
+            "value": 22.852178713471936,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:1 (CPU Time)",
+            "value": 22.848567900649165,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:2 (Real Time)",
+            "value": 23.418577088253617,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:2 (CPU Time)",
+            "value": 23.415633339399314,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:4 (Real Time)",
+            "value": 45.20300812262107,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:4 (CPU Time)",
+            "value": 44.89407237864289,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:8 (Real Time)",
+            "value": 78.06587567468266,
+            "unit": "ns"
+          },
+          {
+            "name": "request_to_list/threads:8 (CPU Time)",
+            "value": 44.486861908730425,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:1 (Real Time)",
+            "value": 1.7829470828268246,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:1 (CPU Time)",
+            "value": 1.7827609520416403,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:2 (Real Time)",
+            "value": 1.762516207094626,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:2 (CPU Time)",
+            "value": 1.7622889828900161,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:4 (Real Time)",
+            "value": 3.520957245655817,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:4 (CPU Time)",
+            "value": 3.5084065864983325,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:8 (Real Time)",
+            "value": 6.748353066215472,
+            "unit": "ns"
+          },
+          {
+            "name": "request_lock_list/threads:8 (CPU Time)",
+            "value": 3.4955121205653144,
+            "unit": "ns"
+          },
+          {
+            "name": "serialize_message (Real Time)",
+            "value": 0.7033844075851101,
+            "unit": "ns"
+          },
+          {
+            "name": "serialize_message (CPU Time)",
+            "value": 0.7032964142514806,
+            "unit": "ns"
           }
         ]
       }
