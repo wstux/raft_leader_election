@@ -1,8 +1,8 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787687518560,
+  "lastUpdate": 1787768122625,
   "repoUrl": "https://github.com/wstux/raft_leader_election",
   "entries": {
-    "Leader Election (Real Time)": [
+    "Benchmark": [
       {
         "commit": {
           "author": {
@@ -16,641 +16,142 @@ window.BENCHMARK_DATA = {
             "username": "web-flow"
           },
           "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
+          "id": "041311e81cadf8247af28407e8affcbf21be0241",
+          "message": "* all: #29 Merge remote-tracking branch 'wstux/feature/update_cmake';",
+          "timestamp": "2026-08-26T21:12:16+03:00",
+          "tree_id": "c7d39b84d437c8483eab988c8894a79c924d3b8a",
+          "url": "https://github.com/wstux/raft_leader_election/commit/041311e81cadf8247af28407e8affcbf21be0241"
         },
-        "date": 1787677211327,
+        "date": 1787768122123,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
-            "name": "3 nodes",
-            "value": 41.36764421000009,
+            "name": "Leader Election (Real Time)::3 nodes",
+            "value": 41.90531576999973,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 42.08667316999936,
+            "name": "Leader Election (CPU Time)::3 nodes",
+            "value": 0.38530617000000006,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 42.52440105000346,
-            "unit": "ms"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 41.44654836000228,
+            "name": "Leader Election (Real Time)::5 nodes",
+            "value": 42.5232643099983,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 42.011793209998984,
+            "name": "Leader Election (CPU Time)::5 nodes",
+            "value": 0.871037340000001,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 43.94043772000174,
-            "unit": "ms"
-          }
-        ]
-      }
-    ],
-    "Leader Election (CPU Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 0.33630375000000035,
+            "name": "Leader Election (Real Time)::7 nodes",
+            "value": 43.03699053999764,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 0.763597520000004,
+            "name": "Leader Election (CPU Time)::7 nodes",
+            "value": 1.5332484200000056,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 1.2858168999999986,
-            "unit": "ms"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 0.37540378000000096,
+            "name": "Leader Election Default (Real Time)::3 nodes",
+            "value": 700.2253757000062,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 0.8200491100000038,
+            "name": "Leader Election Default (CPU Time)::3 nodes",
+            "value": 1.1479096999999827,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 1.4519588100000018,
-            "unit": "ms"
-          }
-        ]
-      }
-    ],
-    "Leader Election Default (Real Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 632.7276119000061,
+            "name": "Leader Election Default (Real Time)::5 nodes",
+            "value": 559.7641118999945,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 589.1793224999986,
+            "name": "Leader Election Default (CPU Time)::5 nodes",
+            "value": 1.5818283000000766,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 571.4614855999997,
-            "unit": "ms"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 695.2629804000082,
+            "name": "Leader Election Default (Real Time)::7 nodes",
+            "value": 562.1254271000026,
             "unit": "ms"
           },
           {
-            "name": "5 nodes",
-            "value": 609.2897692999856,
+            "name": "Leader Election Default (CPU Time)::7 nodes",
+            "value": 1.9267513000000402,
             "unit": "ms"
           },
           {
-            "name": "7 nodes",
-            "value": 565.8748855000027,
-            "unit": "ms"
-          }
-        ]
-      }
-    ],
-    "Leader Election Default (CPU Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 0.7850358000000224,
-            "unit": "ms"
-          },
-          {
-            "name": "5 nodes",
-            "value": 1.3733478000000021,
-            "unit": "ms"
-          },
-          {
-            "name": "7 nodes",
-            "value": 1.7098741999999945,
-            "unit": "ms"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "3 nodes",
-            "value": 0.9825335999999574,
-            "unit": "ms"
-          },
-          {
-            "name": "5 nodes",
-            "value": 1.3174234000000062,
-            "unit": "ms"
-          },
-          {
-            "name": "7 nodes",
-            "value": 1.9224650999999817,
-            "unit": "ms"
-          }
-        ]
-      }
-    ],
-    "Check Contact Quorum (Real Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 4.459247273738747,
+            "name": "Check Contact Quorum (Real Time)::1 threads",
+            "value": 5.748102189670789,
             "unit": "ns"
           },
           {
-            "name": "2 threads",
-            "value": 28.1611041824231,
+            "name": "Check Contact Quorum (Real Time)::2 threads",
+            "value": 51.850423058681855,
             "unit": "ns"
           },
           {
-            "name": "4 threads",
-            "value": 92.68074425438567,
+            "name": "Check Contact Quorum (Real Time)::4 threads",
+            "value": 143.59062544769742,
             "unit": "ns"
           },
           {
-            "name": "8 threads",
-            "value": 149.8874538720559,
-            "unit": "ns"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 5.713500969813915,
+            "name": "Check Contact Quorum (Real Time)::8 threads",
+            "value": 234.769034141187,
             "unit": "ns"
           },
           {
-            "name": "2 threads",
-            "value": 57.25875226000947,
+            "name": "Request to List (Real Time)::1 threads",
+            "value": 22.82533110197752,
             "unit": "ns"
           },
           {
-            "name": "4 threads",
-            "value": 115.27677727747839,
+            "name": "Request to List (Real Time)::2 threads",
+            "value": 23.071065466369898,
             "unit": "ns"
           },
           {
-            "name": "8 threads",
-            "value": 188.23478909976458,
-            "unit": "ns"
-          }
-        ]
-      }
-    ],
-    "Request to List (Real Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 17.74469018846682,
+            "name": "Request to List (Real Time)::4 threads",
+            "value": 46.42913603698213,
             "unit": "ns"
           },
           {
-            "name": "2 threads",
-            "value": 18.16592570066908,
+            "name": "Request to List (Real Time)::8 threads",
+            "value": 87.99761711096814,
             "unit": "ns"
           },
           {
-            "name": "4 threads",
-            "value": 34.77990504077897,
+            "name": "Request Lock List (Real Time)::1 threads",
+            "value": 1.5567021157153365,
             "unit": "ns"
           },
           {
-            "name": "8 threads",
-            "value": 58.242427653647674,
-            "unit": "ns"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 22.852178713471936,
+            "name": "Request Lock List (Real Time)::2 threads",
+            "value": 1.5610458101935123,
             "unit": "ns"
           },
           {
-            "name": "2 threads",
-            "value": 23.418577088253617,
+            "name": "Request Lock List (Real Time)::4 threads",
+            "value": 3.6833516301639633,
             "unit": "ns"
           },
           {
-            "name": "4 threads",
-            "value": 45.20300812262107,
+            "name": "Request Lock List (Real Time)::8 threads",
+            "value": 6.108256431384868,
             "unit": "ns"
           },
           {
-            "name": "8 threads",
-            "value": 78.06587567468266,
-            "unit": "ns"
-          }
-        ]
-      }
-    ],
-    "Request Lock List (Real Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 1.3646141277387434,
-            "unit": "ns"
-          },
-          {
-            "name": "2 threads",
-            "value": 1.365822639091638,
-            "unit": "ns"
-          },
-          {
-            "name": "4 threads",
-            "value": 2.7414586284864244,
-            "unit": "ns"
-          },
-          {
-            "name": "8 threads",
-            "value": 4.718932173428343,
-            "unit": "ns"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "1 threads",
-            "value": 1.7829470828268246,
-            "unit": "ns"
-          },
-          {
-            "name": "2 threads",
-            "value": 1.762516207094626,
-            "unit": "ns"
-          },
-          {
-            "name": "4 threads",
-            "value": 3.520957245655817,
-            "unit": "ns"
-          },
-          {
-            "name": "8 threads",
-            "value": 6.748353066215472,
-            "unit": "ns"
-          }
-        ]
-      }
-    ],
-    "Serialize Message (Real Time)": [
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "539624e1b6ce430129567471b3b46a984f5c318d",
-          "message": "* all: #26 Merge remote-tracking branch 'wstux/bugfix/is_stop';",
-          "timestamp": "2026-08-25T19:57:37+03:00",
-          "tree_id": "1e23aff355b8c8a2b513ed8bd141f143dc84808a",
-          "url": "https://github.com/wstux/raft_leader_election/commit/539624e1b6ce430129567471b3b46a984f5c318d"
-        },
-        "date": 1787677211327,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "Base",
-            "value": 0.5460552518787369,
-            "unit": "ns"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "wstux1@gmail.com",
-            "name": "wstux",
-            "username": "wstux"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "462ea3ab3a419c661c5ae65e20671340f840cb14",
-          "message": "* all: #27 Merge remote-tracking branch 'wstux/feature/github_actions';",
-          "timestamp": "2026-08-25T22:48:58+03:00",
-          "tree_id": "9966b62c58f71920b884148f5c690874d0abf7a0",
-          "url": "https://github.com/wstux/raft_leader_election/commit/462ea3ab3a419c661c5ae65e20671340f840cb14"
-        },
-        "date": 1787687517400,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "Base",
-            "value": 0.7033844075851101,
+            "name": "Serialize Message (Real Time)::Base",
+            "value": 0.6259976990816972,
             "unit": "ns"
           }
         ]
       }
     ]
   }
-};
+}
