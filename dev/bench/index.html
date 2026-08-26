@@ -162,10 +162,44 @@
           };
 
           // Prepare data points for charts
-          return Object.keys(data.entries).map(name => ({
-            name,
-            dataSet: collectBenchesPerTestCase(data.entries[name]),
-          }));
+          return Object.keys(data.entries).map(suiteName => {
+            const originalMap = collectBenchesPerTestCase(data.entries[suiteName]);
+            const mergedMap = new Map();
+
+            if (originalMap.size > 0) {
+              const lineColors = ['#0969da', '#2da44e', '#cf222e', '#bf4b00', '#8250df', '#2f353b'];
+              let colorIdx = 0;
+
+              const firstKey = originalMap.keys().next().value;
+              const timeline = originalMap.get(firstKey);
+
+              const customDatasets = Array.from(originalMap.entries()).map(([lineName, history]) => {
+                const color = lineColors[colorIdx++ % lineColors.length];
+                return {
+                  label: lineName,
+                  data: history.map(h => h.bench.value),
+                  borderColor: color,
+                  backgroundColor: color + '20',
+                  borderWidth: 2,
+                  tension: 0.1
+                };
+              });
+
+              const multiLineData = {
+                commit: timeline[0].commit,
+                date: timeline[0].date,
+                tool: timeline[0].tool,
+                bench: { unit: timeline[0].bench.unit, value: 0 },
+                isMulti: true,
+                customLabels: timeline.map(d => d.commit.id.slice(0, 7)),
+                customDatasets: customDatasets
+              };
+
+              mergedMap.set(suiteName, [multiLineData]);
+            }
+
+            return { name: suiteName, dataSet: mergedMap };
+          });
         }
 
         function renderAllChars(dataSets) {
@@ -176,14 +210,15 @@
             parent.appendChild(canvas);
 
             const color = toolColors[dataset.length > 0 ? dataset[0].tool : '_'];
+            const isMulti = dataset.length > 0 && dataset[0].isMulti;
             const data = {
-              labels: dataset.map(d => d.commit.id.slice(0, 7)),
-              datasets: [
+              labels: isMulti ? dataset[0].customLabels : dataset.map(d => d.commit.id.slice(0, 7)),
+              datasets: isMulti ? dataset[0].customDatasets : [
                 {
                   label: name,
                   data: dataset.map(d => d.bench.value),
                   borderColor: color,
-                  backgroundColor: color + '60', // Add alpha for #rrggbbaa
+                  backgroundColor: color + '60',
                 }
               ],
             };
