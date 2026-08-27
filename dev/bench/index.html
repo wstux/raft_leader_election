@@ -200,7 +200,8 @@
                   data: history.map(h => h.bench.value),
                   borderColor: color,
                   backgroundColor: color + '15',
-                  borderWidth: 2
+                  borderWidth: 2,
+                  _history: history
                 };
               });
 
@@ -271,13 +272,21 @@
               tooltips: {
                 callbacks: {
                   afterTitle: items => {
-                    const {index} = items[0];
-                    const data = dataset[index];
-                    return '\n' + data.commit.message + '\n\n' + data.commit.timestamp + ' committed by @' + data.commit.committer.username + '\n';
+                    const item = items[0];
+                    const activeDataset = data.datasets[item.datasetIndex];
+                    const pointData = isMulti ? activeDataset._history[item.index] : dataset[item.index];
+
+                    if (!pointData) return '';
+                    const username = pointData.commit.committer ? pointData.commit.committer.username : 'author';
+                    return '\n' + pointData.commit.message + '\n\n' + pointData.commit.timestamp + ' committed by @' + username + '\n';
                   },
                   label: item => {
-                    let label = item.value;
-                    const { range, unit } = dataset[item.index].bench;
+                    const activeDataset = data.datasets[item.datasetIndex];
+                    const pointData = isMulti ? activeDataset._history[item.index] : dataset[item.index];
+
+                    if (!pointData) return item.value;
+                    let label = isMulti ? ` ${activeDataset.label}: ${item.value}` : item.value;
+                    const { range, unit } = pointData.bench;
                     label += ' ' + unit;
                     if (range) {
                       label += ' (' + range + ')';
@@ -285,7 +294,10 @@
                     return label;
                   },
                   afterLabel: item => {
-                    const { extra } = dataset[item.index].bench;
+                    const activeDataset = data.datasets[item.datasetIndex];
+                    const pointData = isMulti ? activeDataset._history[item.index] : dataset[item.index];
+                    if (!pointData) return '';
+                    const { extra } = pointData.bench;
                     return extra ? '\n' + extra : '';
                   }
                 }
@@ -294,10 +306,13 @@
                 if (activeElems.length === 0) {
                   return;
                 }
-                // XXX: Undocumented. How can we know the index?
-                const index = activeElems[0]._index;
-                const url = dataset[index].commit.url;
-                window.open(url, '_blank');
+                const active = activeElems[0];
+                const activeDataset = data.datasets[active._datasetIndex];
+                const pointData = isMulti ? activeDataset._history[active._index] : dataset[active._index];
+
+                if (pointData && pointData.commit.url) {
+                  window.open(pointData.commit.url, '_blank');
+                }
               },
             };
 
