@@ -162,43 +162,67 @@
           };
 
           // Prepare data points for charts
-          return Object.keys(data.entries).map(suiteName => {
-            const originalMap = collectBenchesPerTestCase(data.entries[suiteName]);
+          const originalMap = collectBenchesPerTestCase(data.entries["Benchmark"]);
+          const suitesMap = new Map();
+
+          for (const [fullName, history] of originalMap.entries()) {
+            let plotName = fullName;
+            let lineName = "Base";
+
+            if (fullName.includes("::")) {
+              const parts = fullName.split("::");
+              plotName = parts[0];
+              lineName = parts[1];
+            }
+
+            history.forEach(h => { h.bench.name = lineName; });
+
+            if (!suitesMap.has(plotName)) {
+              suitesMap.set(plotName, new Map());
+            }
+            suitesMap.get(plotName).set(lineName, history);
+          }
+
+          return Array.from(suitesMap.keys()).map(pName => {
+            const linesMap = suitesMap.get(pName);
             const mergedMap = new Map();
 
-            if (originalMap.size > 0) {
-              const lineColors = ['#0969da', '#2da44e', '#cf222e', '#bf4b00', '#8250df', '#2f353b'];
+            if (linesMap.size > 0) {
+              const firstLineHistory = linesMap.values().next().value;
+
+              const lineColors = ['#0969da', '#2da44e', '#cf222e', '#bf4b00', '#8250df', '#24292f'];
               let colorIdx = 0;
-
-              const firstKey = originalMap.keys().next().value;
-              const timeline = originalMap.get(firstKey);
-
-              const customDatasets = Array.from(originalMap.entries()).map(([lineName, history]) => {
+              // Convert Map to datasets array
+              const customDatasets = Array.from(linesMap.entries()).map(([lineName, history]) => {
                 const color = lineColors[colorIdx++ % lineColors.length];
                 return {
                   label: lineName,
                   data: history.map(h => h.bench.value),
                   borderColor: color,
-                  backgroundColor: color + '20',
-                  borderWidth: 2,
-                  tension: 0.1
+                  backgroundColor: color + '15',
+                  borderWidth: 2
                 };
               });
 
+              // Create one virtual multilinear dataset to plot
               const multiLineData = {
-                commit: timeline[0].commit,
-                date: timeline[0].date,
-                tool: timeline[0].tool,
-                bench: { unit: timeline[0].bench.unit, value: 0 },
+                commit: firstLineHistory[0].commit,
+                date: firstLineHistory[0].date,
+                tool: firstLineHistory[0].tool,
+                bench: { unit: firstLineHistory[0].bench.unit, value: 0 },
                 isMulti: true,
-                customLabels: timeline.map(d => d.commit.id.slice(0, 7)),
+                customLabels: firstLineHistory.map(d => d.commit.id.slice(0, 7)),
                 customDatasets: customDatasets
               };
 
-              mergedMap.set(suiteName, [multiLineData]);
+              // Put object to mergedMap to renderBenchSet gens only 1 canvas
+              mergedMap.set(pName, [multiLineData]);
             }
 
-            return { name: suiteName, dataSet: mergedMap };
+            return {
+              name: pName,
+              dataSet: mergedMap
+            };
           });
         }
 
