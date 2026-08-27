@@ -56,16 +56,11 @@ struct context final
     const is_stop_fn_t is_stop_fn;
     allocator_type alloc;
 
-    bool is_async_io;
-
     server_config config;
-
     io::ptr p_io;
 
     role::state role;
-
     term_t term;
-
     peer::list peers;
 
     scheduler schd;
