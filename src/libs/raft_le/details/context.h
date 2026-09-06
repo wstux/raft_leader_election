@@ -113,8 +113,6 @@ bool init(context& ctx);
 
 bool is_valid_cluster(const server_id_t id, const cluster_config& cluster_cfg);
 
-server_id_t leader_id(context& ctx);
-
 bool load(context& ctx);
 
 void reconfigure(context& ctx, const config& cfg, const cluster_config& cluster_cfg);

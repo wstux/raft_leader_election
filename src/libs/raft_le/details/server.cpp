@@ -126,7 +126,7 @@ void server::handle_message(const buffer_type& msg_buf)
 
 server_id_t server::leader_id() const
 {
-    return details::utils::leader_id(*m_p_ctx);
+    return m_p_ctx->role.leader_id.load(std::memory_order_acquire);
 }
 
 bool server::load(details::context& ctx)
