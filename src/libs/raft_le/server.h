@@ -63,6 +63,8 @@ public:
 
     void handle_message(const buffer_type& msg_buf);
 
+    server_id_t leader_id() const;
+
     bool reconfigure();
 
     bool start();

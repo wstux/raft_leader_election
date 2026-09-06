@@ -63,12 +63,14 @@ struct config final
 
 struct server_config final
 {
-    server_config(const server_id_t id, bool is_voter)
+    server_config(const server_id_t id, std::string addr, bool is_voter)
         : id(id)
+        , address(std::move(addr))
         , is_voter(is_voter)
     {}
 
     server_id_t id;
+    std::string address;
     bool is_voter;
 };
 
@@ -85,25 +87,25 @@ public:
 public:
     virtual ~io() {}
 
-    virtual cluster_config bootstrap() const = 0;
+    virtual cluster_config bootstrap() const noexcept = 0;
 
-    virtual config configuration() const = 0;
+    virtual config configuration() const noexcept = 0;
 
-    virtual void deinit() = 0;
+    virtual void deinit() noexcept = 0;
 
-    virtual bool init(server_id_t id) = 0;
+    virtual bool init(server_id_t id) noexcept = 0;
 
-    virtual term_t load_term() = 0;
+    virtual term_t load_term() noexcept = 0;
 
-    virtual bool reconfigure(server_id_t id) = 0;
+    virtual bool reconfigure(server_id_t id) noexcept = 0;
 
-    virtual void send(server_id_t id, const buffer_type& msg) = 0;
+    virtual void send(server_id_t id, std::string_view address, const buffer_type& msg) noexcept = 0;
 
-    virtual void set_term(term_t term) = 0;
+    virtual void set_term(term_t term) noexcept = 0;
 
-    virtual void set_voted_for(server_id_t id) = 0;
+    virtual void set_voted_for(server_id_t id) noexcept = 0;
 
-    virtual server_id_t voted_for() const = 0;
+    virtual server_id_t voted_for() const noexcept = 0;
 };
 
 struct logging_handler

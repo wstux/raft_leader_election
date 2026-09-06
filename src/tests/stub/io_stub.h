@@ -213,13 +213,13 @@ public:
 
     virtual ~io_stub() {}
 
-    virtual cluster_config bootstrap() const override final { return *m_p_cluster_cfg; }
+    virtual cluster_config bootstrap() const noexcept override final { return *m_p_cluster_cfg; }
 
-    virtual config configuration() const override final { return m_cfg; };
+    virtual config configuration() const noexcept override final { return m_cfg; };
 
-    virtual void deinit() override final {}
+    virtual void deinit() noexcept override final {}
 
-    virtual bool init(server_id_t id) override final
+    virtual bool init(server_id_t id) noexcept override final
     {
         if (m_clients.empty() && ! m_p_cluster_cfg->servers.empty()) {
             for (const server_config& cfg : m_p_cluster_cfg->servers) {
@@ -231,17 +231,17 @@ public:
         return true;
     }
 
-    virtual term_t load_term() override final { return m_term; }
+    virtual term_t load_term() noexcept override final { return m_term; }
 
-    virtual bool reconfigure(server_id_t) override final { return true; }
+    virtual bool reconfigure(server_id_t) noexcept override final { return true; }
 
-    virtual void send(server_id_t id, const buffer_type& msg) override final { m_clients.at(id)->send(msg); }
+    virtual void send(server_id_t id, std::string_view, const buffer_type& msg) noexcept override final { m_clients.at(id)->send(msg); }
 
-    virtual void set_term(term_t term) override final { m_term = term; }
+    virtual void set_term(term_t term) noexcept override final { m_term = term; }
 
-    virtual void set_voted_for(server_id_t id) override final { m_voted_for = id; }
+    virtual void set_voted_for(server_id_t id) noexcept override final { m_voted_for = id; }
 
-    virtual server_id_t voted_for() const override final { return m_voted_for; }
+    virtual server_id_t voted_for() const noexcept override final { return m_voted_for; }
 
 public:
     std::shared_ptr<cluster_config> m_p_cluster_cfg;

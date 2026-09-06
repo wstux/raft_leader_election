@@ -69,7 +69,7 @@ template<> struct message_filler<message_type::vote_response>
 };
 
 template<message_type TMsgType, typename... TArgs>
-void send(io::ptr p_io, server_id_t dst_id, term_t term, server_id_t src_id, TArgs&&... args)
+void send(io::ptr p_io, server_id_t dst_id, std::string_view addr, term_t term, server_id_t src_id, TArgs&&... args)
 {
     message msg;
 
@@ -81,15 +81,15 @@ void send(io::ptr p_io, server_id_t dst_id, term_t term, server_id_t src_id, TAr
     message_filler<TMsgType>::fill(msg, std::forward<TArgs>(args)...);
 
     buffer_data_type buffer;
-    p_io->send(dst_id, serialize(msg, buffer));
+    p_io->send(dst_id, addr, serialize(msg, buffer));
 }
 
 template<message_type TMsgType, typename... TArgs>
-inline void send(context& ctx, server_id_t dst_id, TArgs&&... args)
+inline void send(context& ctx, server_id_t dst_id, std::string address, TArgs&&... args)
 {
     assert(ctx.id != dst_id);
-    ctx.schd.execute_async([p_io = ctx.p_io, dst_id, args...]() -> void {
-        send<TMsgType>(std::move(p_io), dst_id, std::move(args)...);
+    ctx.schd.execute_async([p_io = ctx.p_io, dst_id, addr = std::move(address), args...]() -> void {
+        send<TMsgType>(std::move(p_io), dst_id, addr, std::move(args)...);
     });
 }
 

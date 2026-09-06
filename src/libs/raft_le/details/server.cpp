@@ -124,6 +124,11 @@ void server::handle_message(const buffer_type& msg_buf)
     m_p_ctx->schd.execute_strand([p_ctx = m_p_ctx.get(), msg = std::move(msg)]() { le::handle_message(*p_ctx, msg); });
 }
 
+server_id_t server::leader_id() const
+{
+    return details::utils::leader_id(*m_p_ctx);
+}
+
 bool server::load(details::context& ctx)
 {
     const bool is_loaded = details::utils::load(ctx);

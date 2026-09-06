@@ -40,7 +40,7 @@ context::context(server_id_t id, const io::ptr p_io, logging_handler::ptr p_hand
     : id(id)
     , is_stop_fn(is_stop)
     , alloc(alloc)
-    , config(gk_invalid_id, false)
+    , config(gk_invalid_id, "", false)
     , p_io(p_io)
     , term(0)
     , schd(alloc)
@@ -155,6 +155,17 @@ bool is_valid_cluster(const server_id_t id, const cluster_config& cluster_cfg)
     it = std::find_if(cluster_cfg.servers.cbegin(), cluster_cfg.servers.cend(),
         [id](const server_config& cfg) -> bool { return cfg.id == id; });
     return it != cluster_cfg.servers.cend();
+}
+
+server_id_t leader_id(context& ctx)
+{
+    const role::role_type role = ctx.role.role.load();
+    if (role == role::role_type::leader) {
+        return ctx.id;
+    } else if (role == role::role_type::leader) {
+        return ctx.role.follower_state.leader_id;
+    }
+    return gk_invalid_id;
 }
 
 bool load(context& ctx)

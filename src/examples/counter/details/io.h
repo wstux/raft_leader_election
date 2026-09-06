@@ -60,21 +60,21 @@ public:
 
     virtual ~io() {}
 
-    virtual raft::le::cluster_config bootstrap() const override final
+    virtual raft::le::cluster_config bootstrap() const noexcept override final
     {
         raft::le::cluster_config cluster_cfg;
         std::transform(m_servers.cbegin(), m_servers.cend(), std::back_inserter(cluster_cfg.servers),
             [](const config::server_config& cfg) -> raft::le::server_config {
-                return raft::le::server_config(cfg.id, cfg.is_voter);
+                return raft::le::server_config(cfg.id, cfg.endpoint, cfg.is_voter);
             });
         return cluster_cfg;
     }
 
-    virtual raft::le::config configuration() const override final { return m_cfg; };
+    virtual raft::le::config configuration() const noexcept override final { return m_cfg; };
 
-    virtual void deinit() override final {}
+    virtual void deinit() noexcept override final {}
 
-    virtual bool init(raft::le::server_id_t id) override final
+    virtual bool init(raft::le::server_id_t id) noexcept override final
     {
         for (const config::server_config& cfg : m_servers) {
             std::unordered_map<raft::le::server_id_t, client::ptr>::iterator it = m_clients.find(cfg.id);
@@ -86,17 +86,20 @@ public:
         return true;
     }
 
-    virtual raft::le::term_t load_term() override final { return m_term; }
+    virtual raft::le::term_t load_term() noexcept override final { return m_term; }
 
-    virtual bool reconfigure(raft::le::server_id_t) override final { return true; }
+    virtual bool reconfigure(raft::le::server_id_t) noexcept override final { return true; }
 
-    virtual void send(raft::le::server_id_t id, const raft::le::buffer_type& msg) override final { m_clients.at(id)->send(msg); }
+    virtual void send(raft::le::server_id_t id, std::string_view, const raft::le::buffer_type& msg) noexcept override final
+    {
+        m_clients.at(id)->send(msg);
+    }
 
-    virtual void set_term(raft::le::term_t term) override final { m_term = term; }
+    virtual void set_term(raft::le::term_t term) noexcept override final { m_term = term; }
 
-    virtual void set_voted_for(raft::le::server_id_t id) override final { m_voted_for = id; }
+    virtual void set_voted_for(raft::le::server_id_t id) noexcept override final { m_voted_for = id; }
 
-    virtual raft::le::server_id_t voted_for() const override final { return m_voted_for; }
+    virtual raft::le::server_id_t voted_for() const noexcept override final { return m_voted_for; }
 
     void update_counter(const uint64_t counter)
     {
