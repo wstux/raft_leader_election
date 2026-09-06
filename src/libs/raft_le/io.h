@@ -59,6 +59,10 @@ struct config final
     size_t heartbeat_interval_ms = 100;
 
     size_t scheduler_threads_count = 4;
+
+    bool is_heartbeat_log_ch_enabled = true;
+    bool is_timeout_log_ch_enabled = true;
+    bool is_vote_log_ch_enabled = true;
 };
 
 struct server_config final
