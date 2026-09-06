@@ -63,12 +63,12 @@ public:
     empty_io() { cfg.scheduler_threads_count = 2; }
     virtual ~empty_io() {}
 
-    virtual cluster_config bootstrap() const override final { return cluster_cfg; }
-    virtual config configuration() const override final { return cfg; };
+    virtual cluster_config bootstrap() const noexcept override final { return cluster_cfg; }
+    virtual config configuration() const noexcept override final { return cfg; };
 
-    virtual void deinit() override final {}
+    virtual void deinit() noexcept override final {}
 
-    virtual bool init(server_id_t id) override final
+    virtual bool init(server_id_t id) noexcept override final
     {
         if (clients.empty() && ! cluster_cfg.servers.empty()) {
             for (const server_config& cfg : cluster_cfg.servers) {
@@ -80,12 +80,12 @@ public:
         return is_init;
     }
 
-    virtual term_t load_term() override final { return 0; }
-    virtual bool reconfigure(server_id_t) override final { return true; }
-    virtual void send(server_id_t id, std::string_view, const buffer_type& msg) override final { clients.at(id)->send(msg); }
-    virtual void set_term(term_t) override final {}
-    virtual void set_voted_for(server_id_t) override final {}
-    virtual server_id_t voted_for() const override final { return gk_invalid_id; }
+    virtual term_t load_term() noexcept override final { return 0; }
+    virtual bool reconfigure(server_id_t) noexcept override final { return true; }
+    virtual void send(server_id_t id, std::string_view, const buffer_type& msg) noexcept override final { clients.at(id)->send(msg); }
+    virtual void set_term(term_t) noexcept override final {}
+    virtual void set_voted_for(server_id_t) noexcept override final {}
+    virtual server_id_t voted_for() const noexcept override final { return gk_invalid_id; }
 
 public:
     config cfg;
