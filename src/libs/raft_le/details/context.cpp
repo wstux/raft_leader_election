@@ -157,6 +157,17 @@ bool is_valid_cluster(const server_id_t id, const cluster_config& cluster_cfg)
     return it != cluster_cfg.servers.cend();
 }
 
+server_id_t leader_id(context& ctx)
+{
+    const role::role_type role = ctx.role.role.load();
+    if (role == role::role_type::leader) {
+        return ctx.id;
+    } else if (role == role::role_type::leader) {
+        return ctx.role.follower_state.leader_id;
+    }
+    return gk_invalid_id;
+}
+
 bool load(context& ctx)
 {
     if (! ctx.peers.empty()) {
