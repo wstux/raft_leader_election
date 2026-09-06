@@ -65,7 +65,7 @@ public:
         raft::le::cluster_config cluster_cfg;
         std::transform(m_servers.cbegin(), m_servers.cend(), std::back_inserter(cluster_cfg.servers),
             [](const config::server_config& cfg) -> raft::le::server_config {
-                return raft::le::server_config(cfg.id, cfg.is_voter);
+                return raft::le::server_config(cfg.id, cfg.endpoint, cfg.is_voter);
             });
         return cluster_cfg;
     }
@@ -90,7 +90,7 @@ public:
 
     virtual bool reconfigure(raft::le::server_id_t) override final { return true; }
 
-    virtual void send(raft::le::server_id_t id, const raft::le::buffer_type& msg) override final { m_clients.at(id)->send(msg); }
+    virtual void send(raft::le::server_id_t id, std::string_view, const raft::le::buffer_type& msg) override final { m_clients.at(id)->send(msg); }
 
     virtual void set_term(raft::le::term_t term) override final { m_term = term; }
 

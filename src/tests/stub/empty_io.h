@@ -82,7 +82,7 @@ public:
 
     virtual term_t load_term() override final { return 0; }
     virtual bool reconfigure(server_id_t) override final { return true; }
-    virtual void send(server_id_t id, const buffer_type& msg) override final { clients.at(id)->send(msg); }
+    virtual void send(server_id_t id, std::string_view, const buffer_type& msg) override final { clients.at(id)->send(msg); }
     virtual void set_term(term_t) override final {}
     virtual void set_voted_for(server_id_t) override final {}
     virtual server_id_t voted_for() const override final { return gk_invalid_id; }
