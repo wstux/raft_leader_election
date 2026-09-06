@@ -165,7 +165,7 @@ void handle_response(context& ctx, term_t term, server_id_t src_id, const vote_r
 
     // Raft Paper, Figure 2 (Rules for Servers): If the incoming term is greater
     // than ours, we revert to Follower.
-    if (! ctx.role.candidate_state.is_prevote) {
+    if (! ctx.role.candidate.is_prevote) {
         role::update_term(ctx, term);
         if (! ctx.role.is_candidate()) {
             return;
@@ -182,14 +182,14 @@ void handle_response(context& ctx, term_t term, server_id_t src_id, const vote_r
     }
 
     // Avoid counting pre-vote votes as regular votes.
-    if (msg.is_prevote != ctx.role.candidate_state.is_prevote) {
+    if (msg.is_prevote != ctx.role.candidate.is_prevote) {
         return;
     }
 
     // Pre-Vote specification (term validation): During Pre-Vote, the node's
     // `ctx.term` is NOT incremented, so it expects responses to match its current
     // term or be from a future perspective.
-    if (ctx.role.candidate_state.is_prevote) {
+    if (ctx.role.candidate.is_prevote) {
         if (term > ctx.term + 1) {
             assert(! msg.accept);
             RAFT_VOTE_LOG_DEBUG(ctx, "Prevote response. Server %llu(%s) has local term (%u) lass than source term (%u).",
@@ -208,19 +208,19 @@ void handle_response(context& ctx, term_t term, server_id_t src_id, const vote_r
 
     if (msg.accept) {
         // Raft Paper, Section 5.2: Candidate receives a vote from a network node.
-        ++ctx.role.candidate_state.votes_granted;
+        ++ctx.role.candidate.votes_granted;
 
         // Raft Paper, Section 5.2: If a candidate wins a majority of votes from
         // the cluster nodes, it wins the election.
         // Check if a majority (quorum) has been reached: (N/2) + 1
         if (role::election_results(ctx)) {
-            if (ctx.role.candidate_state.is_prevote) {
+            if (ctx.role.candidate.is_prevote) {
                 RAFT_VOTE_LOG_DEBUG(ctx, "Votes quorum reached. Prevote successful. Server %llu(%s), current term %u",
                     ctx.id, ctx.role.str(), ctx.term);
                 // Raft Dissertation, Section 9.6: A successful Pre-Vote allows
                 // the candidate to officially increment the term and start the
                 // real election.
-                ctx.role.candidate_state.is_prevote = false;
+                ctx.role.candidate.is_prevote = false;
                 role::election_start(ctx);
             } else {
                 RAFT_VOTE_LOG_DEBUG(ctx, "Votes quorum reached. Convert to leader. Server %llu(%s), current term %u",
@@ -245,7 +245,7 @@ void request(context& ctx)
     assert(ctx.role.is_candidate());
 
     RAFT_VOTE_LOG_DEBUG(ctx, "Request %s. Server %llu(%s), current term %u",
-        (ctx.role.candidate_state.is_prevote ? "prevote" : "vote"), ctx.id, ctx.role.str(), ctx.term);
+        (ctx.role.candidate.is_prevote ? "prevote" : "vote"), ctx.id, ctx.role.str(), ctx.term);
 
     // Raft Paper, Section 5.2: For a real vote: The server MUST increment its
     // current term (`ctx.term++`) before starting the election. For a pre-vote:
@@ -255,15 +255,15 @@ void request(context& ctx)
     // Raft Dissertation, Section 9.6: During Pre-Vote, the term is checked as
     // incremented on the network, but locally on the node, ctx.term is NOT
     // increased until quorum is confirmed.
-    if (ctx.role.candidate_state.is_prevote) {
+    if (ctx.role.candidate.is_prevote) {
         ++term;
     }
 
     // Raft Paper, Section 5.2: "Each candidate votes for itself..."
-    ctx.role.candidate_state.votes_granted = 1;
+    ctx.role.candidate.votes_granted = 1;
     timeout::election_restart_task(ctx);
 
-    const bool is_prevote = ctx.role.candidate_state.is_prevote;
+    const bool is_prevote = ctx.role.candidate.is_prevote;
 
     for (const peer& p : ctx.peers) {
         if (p.is_voter) {

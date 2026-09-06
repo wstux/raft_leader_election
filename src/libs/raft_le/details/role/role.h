@@ -44,16 +44,6 @@ enum role_type : int32_t
     leader    = 3
 };
 
-struct follower_role final {};
-
-struct candidate_role final
-{
-    size_t votes_granted;
-    bool is_prevote;
-};
-
-struct leader_role final {};
-
 struct state final
 {
     inline bool is_follower() const { return role == role_type::follower; }
@@ -84,9 +74,12 @@ struct state final
     std::atomic<server_id_t> leader_id = gk_invalid_id;
 
     union {
-        follower_role  follower_state;
-        candidate_role candidate_state;
-        leader_role    leader_state;
+        struct {} follower;
+        struct {
+            size_t votes_granted;
+            bool is_prevote;
+        } candidate;
+        struct {} leader;
     };
 
     bool is_voter;

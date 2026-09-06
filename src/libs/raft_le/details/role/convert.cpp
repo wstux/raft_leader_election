@@ -54,8 +54,8 @@ void become_candidate(context& ctx)
     ctx.role.role = role_type::candidate;
     ctx.role.leader_id = gk_invalid_id;
 
-    ctx.role.candidate_state.votes_granted = 0;
-    ctx.role.candidate_state.is_prevote = true;
+    ctx.role.candidate.votes_granted = 0;
+    ctx.role.candidate.is_prevote = true;
 
     if (peers::voting_members_count(ctx) == 1) {
         become_leader(ctx);

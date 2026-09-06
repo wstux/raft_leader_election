@@ -41,7 +41,7 @@ bool election_results(context& ctx)
     assert(ctx.role.is_candidate());
 
     const size_t quorum_size = peers::quorum_for_election(ctx) + 1;
-    const size_t votes = ctx.role.candidate_state.votes_granted;
+    const size_t votes = ctx.role.candidate.votes_granted;
 
     return ctx.role.is_candidate() && (votes >= quorum_size);
 }
@@ -50,7 +50,7 @@ void election_start(context& ctx)
 {
     assert(ctx.role.is_candidate());
 
-    if (! ctx.role.candidate_state.is_prevote) {
+    if (! ctx.role.candidate.is_prevote) {
         term_t term = ++ctx.term;
         RAFT_LOG_INFO(ctx, "Server %llu(%s) started election with local increased term %u", ctx.id, ctx.role.str(), ctx.term);
         ctx.p_io->set_term(term);
