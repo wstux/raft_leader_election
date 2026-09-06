@@ -34,7 +34,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "details/span.h"
+#include "raft_le/details/span.h"
 
 namespace wstux {
 namespace raft {
