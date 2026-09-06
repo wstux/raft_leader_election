@@ -85,12 +85,32 @@ void send(io::ptr p_io, server_id_t dst_id, std::string_view addr, term_t term, 
 }
 
 template<message_type TMsgType, typename... TArgs>
-inline void send(context& ctx, server_id_t dst_id, std::string address, TArgs&&... args)
+inline void send_async(context& ctx, server_id_t dst_id, std::string address, TArgs&&... args)
 {
     assert(ctx.id != dst_id);
     ctx.schd.execute_async([p_io = ctx.p_io, dst_id, addr = std::move(address), args...]() -> void {
         send<TMsgType>(std::move(p_io), dst_id, addr, std::move(args)...);
     });
+}
+
+inline void send_heartbeat_request(context& ctx, const peer& p, const term_t term)
+{
+    send_async<message_type::heartbeat_request>(ctx, p.id, p.address, term, ctx.id);
+}
+
+inline void send_heartbeat_response(context& ctx, const peer& p, const term_t term, const bool accept)
+{
+    send_async<message_type::heartbeat_response>(ctx, p.id, p.address, term, ctx.id, accept);
+}
+
+inline void send_vote_request(context& ctx, const peer& p, const term_t term, const bool is_prevote)
+{
+    send_async<message_type::vote_request>(ctx, p.id, p.address, term, ctx.id, is_prevote);
+}
+
+inline void send_vote_response(context& ctx, const peer& p, const term_t term, const bool is_prevote, const bool accept)
+{
+    send_async<message_type::vote_response>(ctx, p.id, p.address, term, ctx.id, is_prevote, accept);
 }
 
 } // namespace utils
